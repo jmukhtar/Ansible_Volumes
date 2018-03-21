@@ -1,5 +1,6 @@
 ---
-
+# Sample ansible playbook to simply perform the tasks
+#
 - hosts: localhost
   user: jmukhtar
   sudo: yes
