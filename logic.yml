@@ -1,0 +1,207 @@
+---
+
+- hosts: localhost
+  user: jmukhtar
+  sudo: yes
+
+  tasks:
+  - parted:
+     device: /dev/sdb
+     number: 1
+     flags: [ lvm ]
+     state: present
+
+  - name: Create Volume -  VG_sybdba_01
+    lvg:
+      vg: VG_sybdba_01
+      pvs: /dev/sdb1
+      pesize: 32
+
+  - name: Creat Logical Volume - sysutils
+    lvol:
+      vg: VG_sybdba_01
+      lv: sysutils
+      size: 250
+      force: yes
+
+
+  - name: Create Logical Volumes - foglight
+    lvol:
+      vg: VG_sybdba_01
+      lv: foglight
+      size: 250
+      force: yes
+
+
+  - name: Create Logical Volumes - sybase
+    lvol:
+      vg: VG_sybdba_01
+      lv: sybase
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - tempdb01
+    lvol:
+      vg: VG_sybdba_01
+      lv: tempdb01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - dump01
+    lvol:
+      vg: VG_sybdba_01
+      lv: dump01
+      size: 250
+      force: yes
+
+
+  - name: Create Logical Volumes - master01
+    lvol:
+      vg: VG_sybdba_01
+      lv: master01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - sysprocsdev01
+    lvol:
+      vg: VG_sybdba_01
+      lv: sysprocsdev01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - sybsecdata01
+    lvol:
+      vg: VG_sybdba_01
+      lv: sybsecdata01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - sybsecdata02
+    lvol:
+      vg: VG_sybdba_01
+      lv: sybsecdata02
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - sybseclog01
+    lvol:
+      vg: VG_sybdba_01
+      lv: sybseclog01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - sybseclog02
+    lvol:
+      vg: VG_sybdba_01
+      lv: sybseclog02
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - system01
+    lvol:
+      vg: VG_sybdba_01
+      lv: system01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - systemlog01
+    lvol:
+      vg: VG_sybdba_01
+      lv: systemlog01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - data01
+    lvol:
+      vg: VG_sybdba_01
+      lv: data01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - tlog01
+    lvol:
+      vg: VG_sybdba_01
+      lv: tlog01
+      size: 250
+      force: yes
+
+  - name: Create Logical Volumes - stableq01
+    lvol:
+      vg: VG_sybdba_01
+      lv: stableq01
+      size: 250
+      force: yes
+
+
+  - name: Create FileSystem
+    filesystem:
+      fstype: ext4
+      dev: /dev/VG_sybdba_01/{{ item }}
+    with_items:
+      - sysutils
+      - foglight
+      - sybase
+      - tempdb01
+      - dump01
+      - master01
+      - sysprocsdev01
+      - sybsecdata01
+      - sybsecdata02
+      - sybseclog01
+      - sybseclog02
+      - system01
+      - systemlog01
+      - data01
+      - tlog01
+      - stableq01
+
+
+  - name: Mount FileSystem - /opt/sybutils
+    mount:
+      name: /opt/sybutils
+      src: /dev/VG_sybdba_01/sysutils
+      fstype: ext4
+      state: mounted
+
+  - name: Mount FileSystem - /opt/foglight
+    mount:
+      name: /opt/foglight
+      src: /dev/VG_sybdba_01/foglight
+      fstype: ext4
+      state: mounted
+
+  - name: Mount FileSystem - /sybdba01/sybase
+    mount:
+      name: /sybdba01/sybase
+      src: /dev/VG_sybdba_01/sybase
+      fstype: ext4
+      state: mounted
+
+  - name: Mount FileSystem - /sybdba01/tempdb01
+    mount:
+      name: /sybdba01/tempdb01
+      src: /dev/VG_sybdba_01/tempdb01
+      fstype: ext4
+      state: mounted
+
+  - name: Mount FileSystem - /sybdba01/dump01
+    mount:
+      name: /sybdba01/dump01
+      src: /dev/VG_sybdba_01/dump01
+      fstype: ext4
+      state: mounted
+
+
+  - name: Setting Correct Permissions
+    file:
+      path: "{{ item }}"
+      owner: jmukhtar
+      group: root
+      mode: 0750
+    with_items:
+      - /opt/sybutils
+      - /opt/foglight
+      - /sybdba01/sybase
+      - /sybdba01/tempdb01
+      - /sybdba01/dump01
+
